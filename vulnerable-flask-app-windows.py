@@ -17,7 +17,9 @@ def main_page():
 def search_user(name):
     con = sqlite3.connect("test.db")
     cur = con.cursor()
-    cur.execute("select * from test where username = '%s'" % name)
+    # Secure code: using parameterized queries with SQLite
+    cur.execute("SELECT * FROM test WHERE username = ?", (name,))
+
     data = str(cur.fetchall())
     con.close()
     import logging
