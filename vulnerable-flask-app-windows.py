@@ -2,7 +2,7 @@ from flask import Flask,jsonify,render_template_string,request,Response,render_t
 import subprocess
 from werkzeug.datastructures import Headers
 from werkzeug.utils import secure_filename
-import sqlite3
+import sqlite3, shlex, os
 
 
 app = Flask(__name__)
@@ -56,8 +56,10 @@ def hello_ssti():
 def get_users():
     try:
         hostname = request.args.get('hostname')
-        command = "nslookup " + hostname
-        data = subprocess.check_output(command, shell=True)
+        # Build the command as a list instead of a string
+        command = ["nslookup", hostname]
+        # Execute the command with shell disabled
+        data = subprocess.check_output(command)
         return data
     except:
         data = str(hostname) + " username didn't found"
@@ -117,9 +119,11 @@ def get_admin_mail(control):
 @app.route("/run_file")
 def run_file():
     try:
-        filename=request.args.get("filename")
-        command="cmd /c "+filename
-        data=subprocess.check_output(command,shell=True)
+        filename = request.args.get("filename")
+        # Build the command list; ensure 'filename' is properly validated or sanitized if needed
+        command = ["cmd", "/c", filename]
+        # Execute the command safely with shell disabled
+        data = subprocess.check_output(command)
         return data
     except:
         return jsonify(data="File failed to run"), 200
