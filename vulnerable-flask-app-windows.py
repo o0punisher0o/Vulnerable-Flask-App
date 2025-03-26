@@ -2,7 +2,7 @@ from flask import Flask,jsonify,render_template_string,request,Response,render_t
 import subprocess
 from werkzeug.datastructures import Headers
 from werkzeug.utils import secure_filename
-import sqlite3, shlex, os
+import sqlite3, shlex, os, json
 
 
 app = Flask(__name__)
@@ -45,8 +45,8 @@ def hello_ssti():
         template = f'''<div>
         <h1>Hello</h1>
         {name}
-</div>
-'''
+        </div>
+        '''
         import logging
         logging.basicConfig(filename="restapi.log", filemode='w', level=logging.DEBUG)
         logging.debug(str(template))
@@ -99,7 +99,7 @@ def deserialization():
             connection, address = s.accept()
             with connection:
                 received_data = connection.recv(1024)
-                data=pickle.loads(received_data)
+                data = json.loads(received_data.decode('utf-8'))
                 return str(data)
     except:
         return jsonify(data="You must connect 8001 port"), 200
