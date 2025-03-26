@@ -76,6 +76,7 @@ def get_log():
 @app.route("/read_file")
 def read_file():
     filename = request.args.get('filename')
+    filename = secure_filename(filename)
     file = open(filename, "r")
     data = file.read()
     file.close()
@@ -127,6 +128,7 @@ def run_file():
 def create_file():
     try:
         filename=request.args.get("filename")
+        filename = secure_filename(filename)
         text=request.args.get("text")
         file=open(filename,"w")
         file.write(text)
